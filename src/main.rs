@@ -1,9 +1,10 @@
+// use warp::fs::File;
 use warp::Filter;
 
 #[tokio::main]
 async fn main() {
-    // GET /hello -> returns a simple hello message
-    let hello = warp::path("hello").map(|| warp::reply::html("<h1>Hello, World!</h1>"));
+    // Serve the index.html file
+    let index = warp::path::end().and(warp::fs::file("./static/index.html"));
 
     // POST /submit -> receives form submission
     let submit = warp::path("submit").and(warp::body::form()).map(
@@ -13,7 +14,7 @@ async fn main() {
         },
     );
 
-    let routes = warp::get().and(hello).or(warp::post().and(submit));
+    let routes = warp::get().and(index).or(warp::post().and(submit));
 
     warp::serve(routes).run(([127, 0, 0, 1], 3030)).await;
 }
